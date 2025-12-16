@@ -1,2 +1,205 @@
 # ai-dilwar-24signal-generator
 Binary option otc market signal generator ai-dilwar-signal-generator
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI-Dilwar-24Signal-Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    h1 {
+      text-align: center;
+      color: #38bdf8;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: #020617;
+      border-radius: 12px;
+      padding: 30px 25px;
+      margin: 15px auto;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 0 25px rgba(0,0,0,0.7);
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      margin: 12px 0;
+      font-size: 18px;
+    }
+    .buy { color: #22c55e; font-weight: bold; }
+    .sell { color: #ef4444; font-weight: bold; }
+    .neutral { color: #facc15; font-weight: bold; }
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 10px;
+      background: #38bdf8;
+      color: #000;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover { background: #0ea5e9; }
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+    .hidden { display: none; }
+    .note { font-size: 13px; color: #94a3b8; text-align: center; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>AI-Dilwar-24Signal-Generator</h1>
+
+    <!-- LOGIN -->
+    <div id="login">
+      <h3>Login Required</h3>
+      <input type="text" id="uid" placeholder="User ID" />
+      <input type="password" id="pwd" placeholder="Password" />
+      <button onclick="login()">Login</button>
+      <div id="loginMsg" class="note"></div>
+    </div>
+
+    <!-- APP -->
+    <div id="app" class="hidden">
+      <div class="row">
+        <strong>Market</strong>
+        <select id="market">
+          <option>OTC EUR/USD</option>
+          <option>OTC GBP/USD</option>
+          <option>OTC USD/JPY</option>
+          <option>OTC AUD/USD</option>
+          <option>OTC USD/CAD</option>
+          <option>OTC USD/CHF</option>
+          <option>OTC NZD/USD</option>
+          <option>OTC EUR/JPY</option>
+          <option>OTC GBP/JPY</option>
+          <option>OTC AUD/JPY</option>
+          <option>OTC CAD/JPY</option>
+          <option>OTC CHF/JPY</option>
+          <option>OTC NZD/JPY</option>
+          <option>OTC EUR/GBP</option>
+          <option>OTC EUR/AUD</option>
+          <option>OTC EUR/CAD</option>
+          <option>OTC EUR/CHF</option>
+          <option>OTC EUR/NZD</option>
+          <option>OTC GBP/AUD</option>
+          <option>OTC GBP/CAD</option>
+          <option>OTC GBP/CHF</option>
+          <option>OTC GBP/NZD</option>
+          <option>OTC AUD/CAD</option>
+          <option>OTC AUD/CHF</option>
+          <option>OTC AUD/NZD</option>
+          <option>OTC CAD/CHF</option>
+          <option>OTC NZD/CAD</option>
+          <option>OTC NZD/CHF</option>
+          <option>OTC USD/BRL</option>
+          <option>OTC USD/INR</option>
+          <option>OTC USD/ARS</option>
+          <option>OTC USD/MXN</option>
+          <option>OTC USD/PKR</option>
+          <option>OTC USD/BDT</option>
+          <option>OTC USD/NGN</option>
+          <option>OTC USD/ZAR</option>
+        </select>
+      </div>
+
+      <div class="row"><span>RSI</span><span id="rsi" class="neutral">WAIT</span></div>
+      <div class="row"><span>MACD</span><span id="macd" class="neutral">WAIT</span></div>
+      <div class="row"><span>EMA Trend</span><span id="ema" class="neutral">WAIT</span></div>
+      <div class="row"><span>Supertrend</span><span id="super" class="neutral">WAIT</span></div>
+      <div class="row"><span>Bollinger Bands</span><span id="bb" class="neutral">WAIT</span></div>
+      <div class="row"><span>Stochastic</span><span id="stoch" class="neutral">WAIT</span></div>
+
+      <hr />
+      <div class="row"><strong>FINAL SIGNAL</strong><strong id="final" class="neutral">WAIT</strong></div>
+      <div class="note">Signal shows ~3 seconds before candle close (demo logic)</div>
+      <button onclick="generateSignal()">Generate Signal</button>
+    </div>
+  </div>
+
+<script>
+// CREDENTIALS
+const USER_ID = 'DilwarAI';
+const PASSWORD = '848654';
+
+// LOGIN FUNCTION
+function login(){
+  const u = document.getElementById('uid').value;
+  const p = document.getElementById('pwd').value;
+  const msg = document.getElementById('loginMsg');
+  if(u === USER_ID && p === PASSWORD){
+    document.getElementById('login').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+  } else {
+    msg.innerText = 'Invalid User ID or Password';
+  }
+}
+
+// GENERATE RANDOM SIGNAL
+function randomSignal() {
+  const r = Math.random();
+  if (r > 0.66) return 'BUY';
+  if (r < 0.33) return 'SELL';
+  return 'WAIT';
+}
+
+// SET SIGNAL
+function setSignal(id, value) {
+  const el = document.getElementById(id);
+  el.innerText = value;
+  el.className = value === 'BUY' ? 'buy' : value === 'SELL' ? 'sell' : 'neutral';
+}
+
+// GENERATE FINAL SIGNAL
+function generateSignal() {
+  setTimeout(() => {
+    const rsi = randomSignal();
+    const macd = randomSignal();
+    const ema = randomSignal();
+    const sup = randomSignal();
+    const bb = randomSignal();
+    const st = randomSignal();
+
+    setSignal('rsi', rsi);
+    setSignal('macd', macd);
+    setSignal('ema', ema);
+    setSignal('super', sup);
+    setSignal('bb', bb);
+    setSignal('stoch', st);
+
+    const signals = [rsi, macd, ema, sup, bb, st];
+    const buyCount = signals.filter(s => s === 'BUY').length;
+    const sellCount = signals.filter(s => s === 'SELL').length;
+
+    let finalSignal = 'WAIT';
+    if(buyCount >= 5 && sellCount <= 1) finalSignal = 'BUY';
+    else if(sellCount >= 5 && buyCount <= 1) finalSignal = 'SELL';
+    else finalSignal = 'WAIT';
+
+    setSignal('final', finalSignal);
+  }, 3000);
+}
+</script>
+</body>
+</html>
